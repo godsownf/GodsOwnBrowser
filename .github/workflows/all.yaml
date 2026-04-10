@@ -1,4 +1,4 @@
-name: Download and Save Python Packages
+name: Cache Python Packages
 
 on:
   push:
@@ -6,31 +6,25 @@ on:
       - main
 
 jobs:
-  download-packages:
+  cache-packages:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
-          ref: main
-          persist-credentials: false
+          fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
+      - run: python -m pip install --upgrade pip
 
-      - name: Create folders and download packages
-        run: |
+      - run: |
           mkdir -p downloaded_packages
           pip download -r requirements.txt -d downloaded_packages
 
-      - name: Commit downloaded packages
-        run: |
+      - run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -45,7 +39,7 @@ jobs:
           git add downloaded_packages/
 
           if git diff --cached --quiet; then
-            echo "No changes in downloaded packages. Skipping commit."
+            echo "No changes to commit"
           else
             git commit -m "Update downloaded packages cache"
             git push origin packages-cache
