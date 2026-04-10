@@ -24,7 +24,7 @@ jobs:
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
 
-      - name: Download all packages from requirements.txt
+      - name: Create folders and download packages
         run: |
           mkdir -p downloaded_packages
           pip download -r requirements.txt -d downloaded_packages
@@ -39,6 +39,8 @@ jobs:
           else
             git checkout -b packages-cache
           fi
+
+          mkdir -p downloaded_packages
 
           git add downloaded_packages/
 
